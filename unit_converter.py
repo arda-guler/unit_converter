@@ -56,12 +56,53 @@ energy_units = [joule, kilojoule, megajoule]
 seconds = unit("time", "seconds", "s", 1)
 milliseconds = unit("time", "milliseconds", "ms", 0.001)
 minutes = unit("time", "minutes", "min", 60)
-hours = unit("time", "hours", "h", 3600)
+hours = unit("time", "hours", "hr", 3600)
 
 time_units = [seconds, milliseconds, minutes, hours]
 
+# TEMPERATURE (special case)
+kelvin = unit("temperature", "kelvin", "K", 0)
+celcius = unit("temperature", "degrees celcius", "C", 0)
+
+temperature_units = [kelvin, celcius]
+
+# MASS FLOW
+kg_per_second = unit("mass flow", "kilograms per second", "kg/s", 1)
+
+mass_flow_units = [kg_per_second]
+
+# VISCOSITY
+millipoise = unit("viscosity", "millipoise", "millipoise", 1/10000)
+kg_per_meters_second = unit("viscosity", "kilogram per meters second", "kg/(m*s)", 1)
+
+viscosity_units = [millipoise, kg_per_meters_second]
+
+# MOLECULAR MASS
+grams_per_mole = unit("molecular mass", "grams per mole", "g/mol", 1)
+kilograms_per_kilomole = unit("molecular mass", "kilograms per kilomole", "kg/kmol", 1)
+
+molecular_mass_units = [grams_per_mole, kilograms_per_kilomole]
+
+# THERMAL CONDUCTIVITY
+watts_per_meter_kelvin = unit("thermal conductivity", "watts per meter kelvin", "W/(m*K)", 1)
+
+thermal_conductivity_units = [watts_per_meter_kelvin]
+
+# ANGLE
+degrees = unit("angle", "degrees", "deg", 1/57.29578)
+radians = unit("angle", "radians", "rad", 1)
+
+angle_units = [degrees, radians]
+
+# VELOCITY
+meters_per_second = unit("velocity", "meters per second", "m/s", 1)
+kilometers_per_second = unit("velocity", "kilometers per second", "km/s", 1000)
+
+velocity_units = [meters_per_second, kilometers_per_second]
+
 units = [length_units, area_units, volume_units, pressure_units, energy_units,
-         time_units]
+         time_units, mass_flow_units, viscosity_units, molecular_mass_units,
+         thermal_conductivity_units, angle_units, temperature_units, velocity_units]
 
 def convert_unit(value, original_unit, converted_unit):
     global units
@@ -83,4 +124,9 @@ def convert_unit(value, original_unit, converted_unit):
     if not original_unit.type == "temperature":
         return value * (original_unit.SI_factor / converted_unit.SI_factor)
     else:
-        pass
+        if original_unit.short_name == "K" and converted_unit.short_name == "C":
+            return value - 273.15
+        elif original_unit.short_name == "C" and converted_unit.short_name == "K":
+            return value + 273.15
+        else:
+            return value
